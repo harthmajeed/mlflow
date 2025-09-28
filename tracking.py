@@ -6,13 +6,14 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import mlflow
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, confusion_matrix
-from scipy.sparse.csr import csr_matrix
+from scipy.sparse import csr_matrix
 
 np.random.seed(1234)
 
@@ -49,16 +50,23 @@ def main(args):
     test_size = 0.3
     train_df, test_df = prepare_data(df, test_size=test_size)
 
-    train_inputs, test_inputs = make_features(train_df, test_df)
-    model = train(
-        train_inputs,
-        train_df["label"].values,
-        penalty=args.penalty,
-        C=args.C,
-        solver=args.solver
-    )
-    f1_score = evaluate(model, test_inputs, test_df["label"].values, df["sentiment"].unique().tolist())
-    print("F1 Score:", f1_score)
+    mlflow.set_experiment("tracking-demo")
+    with mlflow.start_run():
+        train_inputs, test_inputs = make_features(train_df, test_df)
+        model = train(
+            train_inputs,
+            train_df["label"].values,
+            penalty=args.penalty,
+            C=args.C,
+            solver=args.solver
+        )
+        f1_score = evaluate(model, test_inputs, test_df["label"].values, df["sentiment"].unique().tolist())
+        print("F1 Score:", f1_score)
+
+        mlflow.log_param("test_size", test_size)
+        mlflow.log_param("C", args.C)
+        mlflow.log_metric("f1_score", f1_score)
+        #mlflow.log_figure(figure, "figure.png")
 
 if __name__ == "__main__":
     main(parse_args())

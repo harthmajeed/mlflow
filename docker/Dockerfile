@@ -18,8 +18,8 @@ RUN apt-get -qq update \
 
 RUN mkdir -p "${MLFLOW_ARTIFACT_STORE}" /app
 
-COPY ./docker/run-server.sh /
-RUN chmod +x /run-server.sh
+COPY ./docker/run-server.sh /run-server.sh
+RUN sed -i 's/\r$//' /run-server.sh && chmod +x /run-server.sh
 
 RUN HOME=/tmp pip install --no-cache-dir poetry==1.5.1
 

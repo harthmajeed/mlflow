@@ -44,6 +44,9 @@ def evaluate(model: BaseEstimator, test_inputs: csr_matrix, test_outputs: np.nda
     return f1_score(test_outputs, predicted_test_outputs)
 
 def main(args):
+    #Tracking URI added here
+    mlflow.set_tracking_uri(uri="http://localhost:6101")
+    
     df = pd.read_csv("./imdbdataset.csv")
     df["label"] = pd.factorize(df["sentiment"])[0]
 

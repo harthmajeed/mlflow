@@ -19,4 +19,4 @@ exec-in: up
 	docker exec -it local-mlflow-tracking-server bash
 
 lock-dependencies:
-	$(DOCKER_COMPOSE_RUN) bash -c "if [-e ${BUILD_POETRY_LOCK}]; then cp ${BUILD_POETRY_LOCK} ./poetry.lock; else poetry lock; fi"
+	$(DOCKER_COMPOSE_RUN) bash -c "if [ -e ${BUILD_POETRY_LOCK} ]; then cp ${BUILD_POETRY_LOCK} ./poetry.lock; else poetry lock; fi"
